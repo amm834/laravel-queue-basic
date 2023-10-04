@@ -1,1 +1,1 @@
-Hey admin, new user registered.
+Hey admin, new user  {{ $user->name }} registered.

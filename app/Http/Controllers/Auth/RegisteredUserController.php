@@ -3,17 +3,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Mail\UserRegisteredMail;
+use App\Jobs\UserRegisteredJob;
 use App\Models\User;
-use App\Notifications\RegisteredUserNotification;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -46,11 +43,8 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        $admins = User::where('is_admin', true)->get();
 
-        foreach ($admins as $admin) {
-            Mail::to($admin)->send(new UserRegisteredMail());
-        }
+        UserRegisteredJob::dispatch($user);
 
         event(new Registered($user));
 

@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -16,7 +17,7 @@ class UserRegisteredMail extends Mailable implements ShouldQueue
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct(public readonly User $user)
     {
         //
     }
@@ -38,6 +39,9 @@ class UserRegisteredMail extends Mailable implements ShouldQueue
     {
         return new Content(
             view: 'emails.registered',
+            with: [
+                'user' => $this->user,
+            ],
         );
     }
 
