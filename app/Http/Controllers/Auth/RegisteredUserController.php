@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\UserRegisteredMail;
 use App\Models\User;
 use App\Notifications\RegisteredUserNotification;
 use App\Providers\RouteServiceProvider;
@@ -12,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -45,7 +47,10 @@ class RegisteredUserController extends Controller
         ]);
 
         $admins = User::where('is_admin', true)->get();
-        \Illuminate\Support\Facades\Notification::send($admins, new RegisteredUserNotification($user));
+
+        foreach ($admins as $admin) {
+            Mail::to($admin)->send(new UserRegisteredMail());
+        }
 
         event(new Registered($user));
 
